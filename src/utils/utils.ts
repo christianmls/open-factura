@@ -48,29 +48,29 @@ function generateRandomEightDigitNumber(): number {
 }
 
 function generateVerificatorDigit(accessKey: string) {
-  const weights = [2, 3, 4, 5, 6, 7]; // Pesos típicos
+  const weights = [2, 3, 4, 5, 6, 7]; // Pesos cíclicos estándar
   const digits = accessKey.split("").map(Number); // Convertir a un array de dígitos
 
-  // Validar que la entrada sea numérica
+  // Validar que todos los caracteres sean numéricos
   if (digits.some(isNaN)) {
-    throw new Error("Invalid base number. Must contain only digits.");
+    throw new Error("Invalid access key. Must contain only digits.");
   }
 
   // Calcular la suma ponderada
   const total = digits
     .reverse() // Procesar de derecha a izquierda
-    .map((digit, index) => digit * weights[index % weights.length]) // Asignar pesos cíclicos
+    .map((digit, index) => digit * weights[index % weights.length]) // Multiplicar por pesos
     .reduce((sum, value) => sum + value, 0); // Sumar los productos
 
   // Calcular el residuo
   const remainder = total % 11;
 
   // Calcular el dígito verificador
-  const verifier = 11 - remainder;
+  let verifier = 11 - remainder;
 
-  // Manejar casos especiales
-  if (verifier === 10) return 1; // Usualmente 1 para residuo 10
-  if (verifier === 11) return 0; // Usualmente 0 para residuo 0
+  // Ajustar casos especiales
+  if (verifier === 10) verifier = 1;
+  if (verifier === 11) verifier = 0;
 
   return verifier;
 }

@@ -51,15 +51,15 @@ function generateVerificatorDigit(accessKey) {
   const weights = [2, 3, 4, 5, 6, 7];
   const digits = accessKey.split("").map(Number);
   if (digits.some(isNaN)) {
-    throw new Error("Invalid base number. Must contain only digits.");
+    throw new Error("Invalid access key. Must contain only digits.");
   }
   const total = digits.reverse().map((digit, index) => digit * weights[index % weights.length]).reduce((sum, value) => sum + value, 0);
   const remainder = total % 11;
-  const verifier = 11 - remainder;
+  let verifier = 11 - remainder;
   if (verifier === 10)
-    return 1;
+    verifier = 1;
   if (verifier === 11)
-    return 0;
+    verifier = 0;
   return verifier;
 }
 
