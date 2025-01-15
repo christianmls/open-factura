@@ -92,17 +92,19 @@ function generateRandomEightDigitNumber() {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 function generateVerificatorDigit(accessKey) {
-  let result = 0;
-  let addition = 0;
-  let multiple = 7;
-  for (let i = 0; i < accessKey.length; i++) {
-    addition += parseInt(accessKey.charAt(i)) * multiple;
-    multiple > 2 ? multiple-- : multiple = 7;
+  const weights = [2, 3, 4, 5, 6, 7];
+  const digits = accessKey.split("").map(Number);
+  if (digits.some(isNaN)) {
+    throw new Error("Invalid base number. Must contain only digits.");
   }
-  result = 11 - addition % 11;
-  result === 10 ? result = 1 : result = result;
-  result === 11 ? result = 0 : result = result;
-  return result;
+  const total = digits.reverse().map((digit, index) => digit * weights[index % weights.length]).reduce((sum, value) => sum + value, 0);
+  const remainder = total % 11;
+  const verifier = 11 - remainder;
+  if (verifier === 10)
+    return 1;
+  if (verifier === 11)
+    return 0;
+  return verifier;
 }
 
 // src/services/generateInvoice.ts
