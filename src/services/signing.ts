@@ -58,7 +58,7 @@ function getRandomNumber(min = 990, max = 9999) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData: string): Promise<string> {
+export async function signXml(p12Data: string, p12Password: string, xmlData: string): Promise<string> {
   // Convert inputs to Base64
   const xmlBase = xmlData;
   const p12Base64 = Buffer.from(p12Data).toString("base64");
