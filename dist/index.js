@@ -106,6 +106,14 @@ function generateVerificatorDigit(accessKey) {
 }
 
 // src/services/generateInvoice.ts
+function parseDateFromDDMMYYYY(dateString) {
+  const [day, month, year] = dateString.split("/").map(Number);
+  const date = new Date(year, month - 1, day);
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date format or value. Expected format: DD/MM/YYYY");
+  }
+  return date;
+}
 function generateInvoiceXml(invoice) {
   const document = (0, import_xmlbuilder2.create)(invoice);
   const xml = document.end({ prettyPrint: true });
@@ -113,7 +121,7 @@ function generateInvoiceXml(invoice) {
 }
 function generateInvoice(invoiceData) {
   const accessKey = generateAccessKey({
-    date: new Date(invoiceData.infoFactura.fechaEmision),
+    date: parseDateFromDDMMYYYY(invoiceData.infoFactura.fechaEmision),
     codDoc: invoiceData.infoTributaria.codDoc,
     ruc: invoiceData.infoTributaria.ruc,
     environment: invoiceData.infoTributaria.ambiente,
