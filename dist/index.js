@@ -218,6 +218,8 @@ async function signXml(p12Data, p12Password, xmlData) {
   const passwordBase64 = Buffer.from(p12Password, "utf-8").toString("base64");
   const JAR_PATH = import_path.default.resolve(__dirname, "firma/firmaXadesBes.jar");
   const JAVA_CMD = "java";
+  console.log("p12Data:", p12Data);
+  console.log("p12Base64:", p12Base64);
   return new Promise((resolve, reject) => {
     const command = ["-jar", JAR_PATH, xmlBase64, p12Base64, passwordBase64];
     const process = (0, import_child_process.spawn)(JAVA_CMD, command);
