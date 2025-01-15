@@ -61,9 +61,10 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   let xml = xmlData.toString();
   xml = xml.replace(/\s+/g, " ");
   xml = xml.trim();
-  xml = xml.replace(/(?<=\>)(\r?\n)|(\r?\n)(?=\<\/)/g, "");
-  xml = xml.trim();
+  //xml = xml.replace(/(?<=\>)(\r?\n)|(\r?\n)(?=\<\/)/g, "");
+  //xml = xml.trim();
   xml = xml.replace(/(?<=\>)(\s*)/g, "");
+  xml = xml.trim();
 
   const arrayUint8 = new Uint8Array(arrayBuffer);
   const base64 = forge.util.binary.base64.encode(arrayUint8);
