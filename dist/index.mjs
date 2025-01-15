@@ -254,9 +254,9 @@ async function signXml(p12Data, p12Password, xmlData) {
   const certificateX509_serialNumber = parseInt(certificate.serialNumber, 16);
   const exponent = hexToBase64(key.e.data[0].toString(16));
   const modulus = bigIntToBase64(key.n);
-  xml = xml.replace(/\t|\r/g, "").replace('<?xml version="1.0"?>', "");
-  console.log("XML: ", xml);
-  const sha1_xml = sha1Base64(xml, "utf8");
+  const xml_final = xml.replace(/\t|\r/g, "").replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8" standalone="no"?>');
+  const sha1_xml = sha1Base64(xml_final, "utf8");
+  console.log("sha1_xml: ", sha1_xml);
   const nameSpaces = 'xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#"';
   const certificateNumber = getRandomNumber();
   const signatureNumber = getRandomNumber();
@@ -266,7 +266,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   const referenceIdNumber = getRandomNumber();
   const signatureValueNumber = getRandomNumber();
   const objectNumber = getRandomNumber();
-  const isoDateTime = date.toISOString().slice(0, 19);
+  const isoDateTime = date.toISOString();
   let signedProperties = "";
   signedProperties += '<etsi:SignedProperties Id="Signature' + signatureNumber + "-SignedProperties" + signedPropertiesNumber + '">';
   signedProperties += "<etsi:SignedSignatureProperties>";
@@ -376,6 +376,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   xadesBes += "</ds:Object>";
   xadesBes += "</ds:Signature>";
   xml = xml.replace(/<\/factura>\s*$/, xadesBes + "</factura>");
+  console.log("XML: ", xml);
   return xml;
 }
 export {
