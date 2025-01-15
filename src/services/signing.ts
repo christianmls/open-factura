@@ -68,9 +68,6 @@ export async function signXml(p12Data: string, p12Password: string, xmlData: str
   const JAR_PATH = path.resolve(__dirname, "firma/firmaXadesBes.jar");
   const JAVA_CMD = "java";
 
-  console.log("p12Base64:", p12Base64);
-  console.log("passwordBase64:", passwordBase64);
-
   return new Promise((resolve, reject) => {
     const command = ["-jar", JAR_PATH, xmlBase, p12Base64, passwordBase64];
 
