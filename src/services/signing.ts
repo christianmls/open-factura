@@ -160,7 +160,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   const isoDateTime = date.toISOString(); //.slice(0, 19)
 
   let signedProperties = "";
-  signedProperties += '<etsi:SignedProperties Id="Signature' + signatureNumber + "-SignedProperties" + signedPropertiesNumber + '">\n';
+  signedProperties += '\n<etsi:SignedProperties Id="Signature' + signatureNumber + "-SignedProperties" + signedPropertiesNumber + '">\n';
 
   signedProperties += "<etsi:SignedSignatureProperties>\n";
   signedProperties += "<etsi:SigningTime>";
@@ -185,19 +185,19 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   signedProperties += "</etsi:IssuerSerial>\n";
   signedProperties += "</etsi:Cert>\n";
   signedProperties += "</etsi:SigningCertificate>\n";
-  signedProperties += "</etsi:SignedSignatureProperties>";
+  signedProperties += "</etsi:SignedSignatureProperties>\n";
 
-  signedProperties += "<etsi:SignedDataObjectProperties>";
-  signedProperties += '<etsi:DataObjectFormat ObjectReference="#Reference-ID-' + referenceIdNumber + '">';
+  signedProperties += "<etsi:SignedDataObjectProperties>\n";
+  signedProperties += '<etsi:DataObjectFormat ObjectReference="#Reference-ID-' + referenceIdNumber + '">\n';
   signedProperties += "<etsi:Description>";
   signedProperties += "contenido comprobante";
-  signedProperties += "</etsi:Description>";
+  signedProperties += "</etsi:Description>\n";
   signedProperties += "<etsi:MimeType>";
   signedProperties += "text/xml";
-  signedProperties += "</etsi:MimeType>";
-  signedProperties += "</etsi:DataObjectFormat>";
-  signedProperties += "</etsi:SignedDataObjectProperties>";
-  signedProperties += "</etsi:SignedProperties>";
+  signedProperties += "</etsi:MimeType>\n";
+  signedProperties += "</etsi:DataObjectFormat>\n";
+  signedProperties += "</etsi:SignedDataObjectProperties>\n";
+  signedProperties += "</etsi:SignedProperties>\n";
 
   const sha1SignedProperties = sha1Base64(signedProperties.replace("<ets:SignedProperties", "<etsi:SignedProperties " + nameSpaces), "utf8");
 
