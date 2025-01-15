@@ -193,10 +193,9 @@ async function documentReception(stringXML, receptionUrl) {
 var forge = __toESM(require("node-forge"));
 var import_fs = require("fs");
 var import_node_fetch = __toESM(require("node-fetch"));
-var path = __toESM(require("path"));
 var import_child_process = require("child_process");
-function getP12FromLocalFile(path2) {
-  const file = (0, import_fs.readFileSync)(path2);
+function getP12FromLocalFile(path) {
+  const file = (0, import_fs.readFileSync)(path);
   const buffer = file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength);
   return buffer;
 }
@@ -204,46 +203,42 @@ async function getP12FromUrl(url) {
   const file = await (0, import_node_fetch.default)(url).then((response) => response.arrayBuffer()).then((data) => data);
   return file;
 }
-function getXMLFromLocalFile(path2) {
-  const file = (0, import_fs.readFileSync)(path2, "utf8");
+function getXMLFromLocalFile(path) {
+  const file = (0, import_fs.readFileSync)(path, "utf8");
   return file;
 }
 async function getXMLFromLocalUrl(url) {
   const file = await (0, import_node_fetch.default)(url).then((response) => response.text()).then((data) => data);
   return file;
 }
-async function signXml(xmlDocument, filePk12, password) {
+async function signXml(p12Data, p12Password, xmlData) {
+  const xmlBase64 = Buffer.from(xmlData, "utf-8").toString("base64");
+  const p12Base64 = Buffer.from(p12Data).toString("base64");
+  const passwordBase64 = Buffer.from(p12Password, "utf-8").toString("base64");
   const JAR_PATH = "firma/firmaXadesBes.jar";
   const JAVA_CMD = "java";
-  const firmaPath = path.join(__dirname, JAR_PATH);
-  const encodedPk12 = filePk12.toString("base64");
-  const encodedPassword = Buffer.from(password, "utf-8").toString("base64");
-  const command = [JAVA_CMD, "-jar", firmaPath, xmlDocument, encodedPk12, encodedPassword];
-  try {
-    console.info("Attempting to execute digital signature command");
-    (0, import_child_process.execSync)(command.join(" "));
-    return await new Promise((resolve, reject) => {
-      const process = (0, import_child_process.spawn)(JAVA_CMD, ["-jar", firmaPath, xmlDocument, encodedPk12, encodedPassword]);
-      let output = "";
-      process.stdout.on("data", (data) => {
-        output += data.toString();
-      });
-      process.stderr.on("data", (data) => {
-        console.error("Error:", data.toString());
-      });
-      process.on("close", (code) => {
-        if (code === 0) {
-          resolve(output);
-        } else {
-          console.error(`Process exited with code ${code}`);
-          reject(new Error(`Process exited with code ${code}`));
-        }
-      });
+  return new Promise((resolve, reject) => {
+    const command = ["-jar", JAR_PATH, xmlBase64, p12Base64, passwordBase64];
+    const process = (0, import_child_process.spawn)(JAVA_CMD, command);
+    let output = "";
+    let errorOutput = "";
+    process.stdout.on("data", (data) => {
+      output += data.toString();
     });
-  } catch (error) {
-    console.error("Error during Java process execution:", error);
-    return void 0;
-  }
+    process.stderr.on("data", (data) => {
+      errorOutput += data.toString();
+    });
+    process.on("close", (code) => {
+      if (code === 0) {
+        resolve(output.trim());
+      } else {
+        reject(new Error(`Error signing XML. Code: ${code}. Details: ${errorOutput}`));
+      }
+    });
+    process.on("error", (err) => {
+      reject(new Error(`Process execution failed: ${err.message}`));
+    });
+  });
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

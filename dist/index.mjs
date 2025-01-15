@@ -149,10 +149,9 @@ async function documentReception(stringXML, receptionUrl) {
 import * as forge from "node-forge";
 import { readFileSync } from "fs";
 import fetch from "node-fetch";
-import * as path from "path";
-import { execSync, spawn } from "child_process";
-function getP12FromLocalFile(path2) {
-  const file = readFileSync(path2);
+import { spawn } from "child_process";
+function getP12FromLocalFile(path) {
+  const file = readFileSync(path);
   const buffer = file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength);
   return buffer;
 }
@@ -160,46 +159,42 @@ async function getP12FromUrl(url) {
   const file = await fetch(url).then((response) => response.arrayBuffer()).then((data) => data);
   return file;
 }
-function getXMLFromLocalFile(path2) {
-  const file = readFileSync(path2, "utf8");
+function getXMLFromLocalFile(path) {
+  const file = readFileSync(path, "utf8");
   return file;
 }
 async function getXMLFromLocalUrl(url) {
   const file = await fetch(url).then((response) => response.text()).then((data) => data);
   return file;
 }
-async function signXml(xmlDocument, filePk12, password) {
+async function signXml(p12Data, p12Password, xmlData) {
+  const xmlBase64 = Buffer.from(xmlData, "utf-8").toString("base64");
+  const p12Base64 = Buffer.from(p12Data).toString("base64");
+  const passwordBase64 = Buffer.from(p12Password, "utf-8").toString("base64");
   const JAR_PATH = "firma/firmaXadesBes.jar";
   const JAVA_CMD = "java";
-  const firmaPath = path.join(__dirname, JAR_PATH);
-  const encodedPk12 = filePk12.toString("base64");
-  const encodedPassword = Buffer.from(password, "utf-8").toString("base64");
-  const command = [JAVA_CMD, "-jar", firmaPath, xmlDocument, encodedPk12, encodedPassword];
-  try {
-    console.info("Attempting to execute digital signature command");
-    execSync(command.join(" "));
-    return await new Promise((resolve, reject) => {
-      const process = spawn(JAVA_CMD, ["-jar", firmaPath, xmlDocument, encodedPk12, encodedPassword]);
-      let output = "";
-      process.stdout.on("data", (data) => {
-        output += data.toString();
-      });
-      process.stderr.on("data", (data) => {
-        console.error("Error:", data.toString());
-      });
-      process.on("close", (code) => {
-        if (code === 0) {
-          resolve(output);
-        } else {
-          console.error(`Process exited with code ${code}`);
-          reject(new Error(`Process exited with code ${code}`));
-        }
-      });
+  return new Promise((resolve, reject) => {
+    const command = ["-jar", JAR_PATH, xmlBase64, p12Base64, passwordBase64];
+    const process = spawn(JAVA_CMD, command);
+    let output = "";
+    let errorOutput = "";
+    process.stdout.on("data", (data) => {
+      output += data.toString();
     });
-  } catch (error) {
-    console.error("Error during Java process execution:", error);
-    return void 0;
-  }
+    process.stderr.on("data", (data) => {
+      errorOutput += data.toString();
+    });
+    process.on("close", (code) => {
+      if (code === 0) {
+        resolve(output.trim());
+      } else {
+        reject(new Error(`Error signing XML. Code: ${code}. Details: ${errorOutput}`));
+      }
+    });
+    process.on("error", (err) => {
+      reject(new Error(`Process execution failed: ${err.message}`));
+    });
+  });
 }
 export {
   documentAuthorization,
