@@ -9,8 +9,8 @@ import { TaxInfo, taxInfo } from "./taxInfo";
 
 export type Invoice = {
   factura: {
-    "@xmlns:ds": string;
-    "@xmlns:xsi": string;
+    //"@xmlns:ds": string;
+    //"@xmlns:xsi": string;
     "@id": string;
     "@version": string;
     infoTributaria: TaxInfo;

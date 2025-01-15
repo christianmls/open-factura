@@ -206,8 +206,6 @@ type TaxInfo = {
 
 type Invoice = {
     factura: {
-        "@xmlns:ds": string;
-        "@xmlns:xsi": string;
         "@id": string;
         "@version": string;
         infoTributaria: TaxInfo;

@@ -152,10 +152,10 @@ function generateInvoice(invoiceData) {
   const infoTributariaData = { ...invoiceData.infoTributaria, claveAcceso: accessKey };
   const invoice = {
     factura: {
-      "@xmlns:ds": "http://www.w3.org/2000/09/xmldsig#",
-      "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+      //"@xmlns:ds": "http://www.w3.org/2000/09/xmldsig#",
+      //"@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
       "@id": "comprobante",
-      "@version": "1.0.0",
+      "@version": "1.1.0",
       infoTributaria: reorderTaxInfo(infoTributariaData),
       infoFactura: invoiceData.infoFactura,
       detalles: invoiceData.detalles
