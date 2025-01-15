@@ -18,7 +18,7 @@
     "build": "tsup & npm run copy-folder & git add . & git commit -m 'v0.4.0' & git push origin main",
     "start": "tsc ./src/index.ts",
     "publish-changes": "npm run build & npm link & npm link open-factura & npm publish",
-    "copy-folder": "copyfiles -u 2 ./src/services/firma/** ./dist/firma"
+    "copy-folder": "copyfiles -u 2 ./src/services/firma/** ./dist"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.6.12",
