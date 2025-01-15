@@ -291,5 +291,5 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   xadesBes += "</ds:Object>";
   xadesBes += "</ds:Signature>";
 
-  return xml.replace(/(<[^<]+)$/, xadesBes + "$1");
+  return xml.replace(/<\/factura>\s*$/, xadesBes + "</factura>");
 }
