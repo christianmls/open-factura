@@ -213,13 +213,14 @@ async function getXMLFromLocalUrl(url) {
   return file;
 }
 async function signXml(p12Data, p12Password, xmlData) {
-  const xmlBase64 = Buffer.from(xmlData, "utf-8").toString("base64");
+  const xmlBase = xmlData;
   const p12Base64 = Buffer.from(p12Data).toString("base64");
   const passwordBase64 = Buffer.from(p12Password, "utf-8").toString("base64");
   const JAR_PATH = import_path.default.resolve(__dirname, "firma/firmaXadesBes.jar");
   const JAVA_CMD = "java";
+  console.log("passwordBase64:", passwordBase64);
   return new Promise((resolve, reject) => {
-    const command = ["-jar", JAR_PATH, xmlBase64, p12Base64, passwordBase64];
+    const command = ["-jar", JAR_PATH, xmlBase, p12Base64, passwordBase64];
     const process = (0, import_child_process.spawn)(JAVA_CMD, command);
     let output = "";
     let errorOutput = "";
