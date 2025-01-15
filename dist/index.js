@@ -418,7 +418,9 @@ async function signXml(p12Data, p12Password, xmlData) {
   xadesBes += "</etsi:QualifyingProperties>";
   xadesBes += "</ds:Object>";
   xadesBes += "</ds:Signature>";
-  return xml.replace(/<\/factura>\s*$/, xadesBes + "</factura>");
+  xml = xml.replace(/<\/factura>\s*$/, xadesBes + "</factura>");
+  console.log("XML: ", xml);
+  return xml;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
