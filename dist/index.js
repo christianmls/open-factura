@@ -293,7 +293,6 @@ async function signXml(p12Data, p12Password, xmlData) {
   const certificateX509_serialNumber = parseInt(certificate.serialNumber, 16);
   const exponent = hexToBase64(key.e.data[0].toString(16));
   const modulus = bigIntToBase64(key.n);
-  xml = xml.replace(/\t|\r/g, "");
   xml = xml.replace('<?xml version="1.0"?>', "");
   const sha1_xml = sha1Base64(xml, "utf8");
   console.log("sha1_xml: ", xml);
@@ -416,7 +415,6 @@ async function signXml(p12Data, p12Password, xmlData) {
   xadesBes += "</ds:Object>";
   xadesBes += "</ds:Signature>";
   console.log("sha1_xml: ", sha1Base64(xml, "utf8"));
-  console.log("XML: ", xml);
   return xml;
 }
 // Annotate the CommonJS export names for ESM import in node:
