@@ -193,7 +193,7 @@ function getRandomNumber(min = 990, max = 9999) {
 }
 async function signXml(p12Data, p12Password, xmlData) {
   const arrayBuffer = p12Data;
-  let xml = xmlData;
+  let xml = xmlData.toString();
   xml = xml.replace(/\s+/g, " ");
   xml = xml.trim();
   xml = xml.replace(/(?<=\>)(\r?\n)|(\r?\n)(?=\<\/)/g, "");
@@ -255,7 +255,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   const exponent = hexToBase64(key.e.data[0].toString(16));
   const modulus = bigIntToBase64(key.n);
   xml = xml.replace(/\t|\r/g, "");
-  const sha1_xml = sha1Base64(xml.replace('<?xml version="1.0" encoding="UTF-8"?>', ""), "utf8");
+  const sha1_xml = sha1Base64(xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '<?xml version="1.0" encoding="UTF-8" standalone="no"?>'), "utf8");
   const nameSpaces = 'xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#"';
   const certificateNumber = getRandomNumber();
   const signatureNumber = getRandomNumber();
@@ -323,7 +323,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   keyInfo += "\n</ds:KeyValue>";
   keyInfo += "\n</ds:KeyInfo>";
   const sha1KeyInfo = sha1Base64(keyInfo.replace("<ds:KeyInfo", "<ds:KeyInfo " + nameSpaces), "utf8");
-  let signedInfo = "";
+  let signedInfo = "\n";
   signedInfo += '<ds:SignedInfo Id="Signature-SignedInfo' + signedInfoNumber + '">';
   signedInfo += '\n<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315">';
   signedInfo += "</ds:CanonicalizationMethod>";
