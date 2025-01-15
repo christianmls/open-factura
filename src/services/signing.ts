@@ -293,9 +293,10 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   xadesBes += "</ds:Object>";
   xadesBes += "</ds:Signature>";
 
-  console.log("sha1_xml: ", sha1Base64(xml_final, "utf8"));
+  console.log("sha1_xml: ", sha1Base64(xml, "utf8"));
 
   xml = xml.replace(/<\/factura>\s*$/, xadesBes + "</factura>");
+  console.log("sha1_xml: ", sha1Base64(xml, "utf8"));
 
   console.log("XML: ", xml);
 
