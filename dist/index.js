@@ -214,19 +214,25 @@ function processP12(p12Data, password) {
   const der = forge.util.decode64(base64);
   const asn12 = forge.asn1.fromDer(der);
   const p12 = forge.pkcs12.pkcs12FromAsn1(asn12, password);
-  const certBags = p12.getBags({ bagType: forge.pki.oids.certBag });
-  const pkcs8Bags = p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag });
+  const certBags = p12.getBags({
+    bagType: forge.pki.oids.certBag
+  });
+  const pkcs8Bags = p12.getBags({
+    bagType: forge.pki.oids.pkcs8ShroudedKeyBag
+  });
   const certBag = certBags[forge.pki.oids.certBag];
   const pkcs8Bag = pkcs8Bags[forge.pki.oids.pkcs8ShroudedKeyBag];
   if (!certBag || certBag.length === 0) {
     throw new Error("No certificates found in the P12 file.");
   }
-  const friendlyName = certBag[0]?.attributes?.friendlyName?.[0] || "Unknown";
-  const certificate = certBag[0]?.cert;
-  const privateKey = pkcs8Bag?.[0]?.key;
-  if (!certificate || !privateKey) {
-    throw new Error("Certificate or private key is missing in the P12 file.");
+  if (!pkcs8Bag || pkcs8Bag.length === 0) {
+    throw new Error("No private keys found in the P12 file.");
   }
+  const certificate = certBag[0].cert;
+  const key = pkcs8Bag[0].key;
+  const certificateX509_pem = forge.pki.certificateToPem(certificate);
+  const issuerAttributes = certificate.issuer.attributes;
+  const issuerName = issuerAttributes.map((attr) => `${attr.shortName}=${attr.value}`).join(", ");
   const notBefore = certificate.validity.notBefore;
   const notAfter = certificate.validity.notAfter;
   const currentDate = /* @__PURE__ */ new Date();
@@ -234,9 +240,10 @@ function processP12(p12Data, password) {
     throw new Error("The certificate is expired or not yet valid.");
   }
   return {
-    friendlyName,
     certificate,
-    privateKey,
+    key,
+    issuerName,
+    certificateX509_pem,
     notBefore,
     notAfter
   };

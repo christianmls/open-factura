@@ -57,49 +57,61 @@ function getRandomNumber(min = 990, max = 9999) {
 }
 
 export function processP12(p12Data: ArrayBuffer, password: string) {
-  // Convierte el ArrayBuffer a un formato compatible
-  const arrayUint8 = new Uint8Array(p12Data);
-  const base64 = forge.util.binary.base64.encode(arrayUint8);
-  const der = forge.util.decode64(base64);
+  // Convertir ArrayBuffer a formato compatible
+  const arrayUint8: Uint8Array = new Uint8Array(p12Data);
+  const base64: string = forge.util.binary.base64.encode(arrayUint8);
+  const der: string = forge.util.decode64(base64);
 
-  // Decodifica el archivo .p12 usando la contraseña
-  const asn1 = forge.asn1.fromDer(der);
-  const p12 = forge.pkcs12.pkcs12FromAsn1(asn1, password);
+  // Decodificar el archivo .p12 usando la contraseña
+  const asn1: forge.asn1.Asn1 = forge.asn1.fromDer(der);
+  const p12: forge.pkcs12.Pkcs12Pfx = forge.pkcs12.pkcs12FromAsn1(asn1, password);
 
-  // Obtiene las bolsas (bags) del archivo .p12
-  const certBags = p12.getBags({ bagType: forge.pki.oids.certBag });
-  const pkcs8Bags = p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag });
+  // Obtener bolsas (bags) del archivo .p12
+  const certBags: { [key: string]: forge.pkcs12.Bag[] | undefined } = p12.getBags({
+    bagType: forge.pki.oids.certBag,
+  });
+  const pkcs8Bags: { [key: string]: forge.pkcs12.Bag[] | undefined } = p12.getBags({
+    bagType: forge.pki.oids.pkcs8ShroudedKeyBag,
+  });
 
-  const certBag = certBags[forge.pki.oids.certBag];
-  const pkcs8Bag = pkcs8Bags[forge.pki.oids.pkcs8ShroudedKeyBag];
+  const certBag: forge.pkcs12.Bag[] | undefined = certBags[forge.pki.oids.certBag];
+  const pkcs8Bag: forge.pkcs12.Bag[] | undefined = pkcs8Bags[forge.pki.oids.pkcs8ShroudedKeyBag];
 
   if (!certBag || certBag.length === 0) {
     throw new Error("No certificates found in the P12 file.");
   }
 
-  // Extraer información clave
-  const friendlyName = certBag[0]?.attributes?.friendlyName?.[0] || "Unknown";
-  const certificate = certBag[0]?.cert;
-  const privateKey = pkcs8Bag?.[0]?.key;
-
-  if (!certificate || !privateKey) {
-    throw new Error("Certificate or private key is missing in the P12 file.");
+  if (!pkcs8Bag || pkcs8Bag.length === 0) {
+    throw new Error("No private keys found in the P12 file.");
   }
 
-  // Opcional: Verifica fechas de validez
-  const notBefore = certificate.validity.notBefore;
-  const notAfter = certificate.validity.notAfter;
-  const currentDate = new Date();
+  // Extraer certificado
+  const certificate: forge.pki.Certificate = certBag[0].cert as forge.pki.Certificate;
+
+  // Extraer clave privada
+  const key: forge.pki.PrivateKey = pkcs8Bag[0].key as forge.pki.PrivateKey;
+
+  // Convertir el certificado a formato PEM
+  const certificateX509_pem: string = forge.pki.certificateToPem(certificate);
+
+  // Obtener nombre del emisor
+  const issuerAttributes: forge.pki.CertificateField[] = certificate.issuer.attributes;
+  const issuerName: string = issuerAttributes.map((attr) => `${attr.shortName}=${attr.value}`).join(", ");
+
+  // Validar fechas del certificado
+  const notBefore: Date = certificate.validity.notBefore;
+  const notAfter: Date = certificate.validity.notAfter;
+  const currentDate: Date = new Date();
 
   if (currentDate < notBefore || currentDate > notAfter) {
     throw new Error("The certificate is expired or not yet valid.");
   }
 
-  // Retorna la información clave
   return {
-    friendlyName,
     certificate,
-    privateKey,
+    key,
+    issuerName,
+    certificateX509_pem,
     notBefore,
     notAfter,
   };
