@@ -1,6 +1,6 @@
 {
   "name": "open-factura",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "author": {
     "name": "Miguel Langarano"
   },
@@ -15,7 +15,7 @@
     "url": "https://github.com/miguelangarano/open-factura.git"
   },
   "scripts": {
-    "build": "tsup & git add . & git commit -m 'v0.3.8' & git push origin main",
+    "build": "tsup & git add . & git commit -m 'v0.3.9' & git push origin main",
     "start": "tsc ./src/index.ts",
     "publish-changes": "npm run build & npm link & npm link open-factura & npm publish"
   },
