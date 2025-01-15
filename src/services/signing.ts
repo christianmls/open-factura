@@ -296,5 +296,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
 
   console.log("sha1_xml: ", sha1Base64(xml, "utf8"));
 
+  xml = xml.replace(/<\/factura>\s*$/, xadesBes + "</factura>");
+
   return xml;
 }
