@@ -37,12 +37,10 @@ function generateAccessKey(accessKeyData) {
   return accessKey;
 }
 function formatDateToDDMMYYYY(date) {
-  let day = date.getDate();
-  let month = date.getMonth() + 1;
-  let year = date.getFullYear();
-  const finalDay = day < 10 ? "0" + day : day;
-  const finalMonth = month < 10 ? "0" + month : month;
-  return `${finalDay}${finalMonth}${year}`;
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}${month}${year}`;
 }
 function generateRandomEightDigitNumber() {
   const min = 1e7;

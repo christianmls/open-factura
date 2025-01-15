@@ -33,16 +33,12 @@ export function generateAccessKey(accessKeyData: GenerateAccessKey) {
   return accessKey;
 }
 
-function formatDateToDDMMYYYY(date: Date) {
-  let day = date.getDate();
-  let month = date.getMonth() + 1; // getMonth() returns 0-11
-  let year = date.getFullYear();
+function formatDateToDDMMYYYY(date: Date): string {
+  const day = String(date.getDate()).padStart(2, "0"); // Día con cero a la izquierda
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Mes con cero a la izquierda
+  const year = date.getFullYear(); // Año completo (4 dígitos)
 
-  // Pad day and month with a leading zero if they are less than 10
-  const finalDay = day < 10 ? "0" + day : day;
-  const finalMonth = month < 10 ? "0" + month : month;
-
-  return `${finalDay}${finalMonth}${year}`;
+  return `${day}${month}${year}`;
 }
 
 function generateRandomEightDigitNumber(): number {
