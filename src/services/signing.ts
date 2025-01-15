@@ -95,7 +95,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
     .map((attribute) => {
       return `${attribute.shortName}=${attribute.value}`;
     })
-    .join(", ");
+    .join(",");
 
   if (/BANCO CENTRAL/i.test(issuerName)) {
     let keys = pkcs8Bags[(forge as any).oids.pkcs8ShroudedKeyBag];

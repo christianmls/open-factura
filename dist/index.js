@@ -265,7 +265,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   const issueAttributes = cert.cert.issuer.attributes;
   issuerName = issueAttributes.reverse().map((attribute) => {
     return `${attribute.shortName}=${attribute.value}`;
-  }).join(", ");
+  }).join(",");
   if (/BANCO CENTRAL/i.test(issuerName)) {
     let keys = pkcs8Bags[forge.oids.pkcs8ShroudedKeyBag];
     for (let i = 0; i < keys.length; i++) {
