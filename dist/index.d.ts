@@ -257,6 +257,6 @@ declare function getP12FromLocalFile(path: string): ArrayBuffer | SharedArrayBuf
 declare function getP12FromUrl(url: string): Promise<ArrayBuffer>;
 declare function getXMLFromLocalFile(path: string): string;
 declare function getXMLFromLocalUrl(url: string): Promise<string>;
-declare function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData: string): Promise<string>;
+declare function signXml(xmlDocument: string, filePk12: Buffer, password: string): Promise<string | undefined>;
 
 export { type AdditionalDetail, type AdditionalDetails, type AdditionalField, type AdditionalInfo, type Arrival, type Arrivals, type Compensation, type Compensations, type Detail, type Details, type Invoice, type InvoiceInfo, type InvoiceInput, type OtherThirdPartyValues, type Payment, type Payments, type ReimbursementCompensation, type ReimbursementCompensations, type ReimbursementDetail, type Reimbursements, type RemisionGuideSustitutiveInfo, type Retention, type Retentions, type Tax, type TaxDetail, type TaxDetails, type TaxInfo, type Taxes, type ThirdPartyValue, type TotalWithTax, type TotalWithTaxes, documentAuthorization, documentReception, generateInvoice, generateInvoiceXml, getP12FromLocalFile, getP12FromUrl, getXMLFromLocalFile, getXMLFromLocalUrl, signXml };

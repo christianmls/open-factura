@@ -1,6 +1,8 @@
 import * as forge from "node-forge";
 import { readFileSync } from "fs";
 import fetch from "node-fetch";
+import * as path from "path";
+import { execSync, spawn } from "child_process";
 
 export function getP12FromLocalFile(path: string) {
   const file = readFileSync(path);
@@ -56,7 +58,58 @@ function getRandomNumber(min = 990, max = 9999) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData: string) {
+export async function signXml(xmlDocument: string, filePk12: Buffer, password: string): Promise<string | undefined> {
+  /**
+   * Method to apply digital signature to an XML document.
+   */
+
+  const JAR_PATH = "firma/firmaXadesBes.jar";
+  const JAVA_CMD = "java";
+  const firmaPath = path.join(__dirname, JAR_PATH);
+
+  // Base64 encode the PKCS#12 file and password
+  const encodedPk12 = filePk12.toString("base64");
+  const encodedPassword = Buffer.from(password, "utf-8").toString("base64");
+
+  // Command to execute the JAR file with arguments
+  const command = [JAVA_CMD, "-jar", firmaPath, xmlDocument, encodedPk12, encodedPassword];
+
+  try {
+    console.info("Attempting to execute digital signature command");
+
+    // Execute the command synchronously to check for errors
+    execSync(command.join(" "));
+
+    // Execute the command asynchronously to capture the output
+    return await new Promise<string | undefined>((resolve, reject) => {
+      const process = spawn(JAVA_CMD, ["-jar", firmaPath, xmlDocument, encodedPk12, encodedPassword]);
+
+      let output = "";
+
+      process.stdout.on("data", (data) => {
+        output += data.toString();
+      });
+
+      process.stderr.on("data", (data) => {
+        console.error("Error:", data.toString());
+      });
+
+      process.on("close", (code) => {
+        if (code === 0) {
+          resolve(output);
+        } else {
+          console.error(`Process exited with code ${code}`);
+          reject(new Error(`Process exited with code ${code}`));
+        }
+      });
+    });
+  } catch (error) {
+    console.error("Error during Java process execution:", error);
+    return undefined;
+  }
+}
+
+export async function signXmlAnterior(p12Data: ArrayBuffer, p12Password: string, xmlData: string) {
   const arrayBuffer = p12Data;
   let xml = xmlData;
   // xml = xml.replace(/\s+/g, " ");
@@ -197,7 +250,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   signedProperties += "</etsi:MimeType>\n";
   signedProperties += "</etsi:DataObjectFormat>\n";
   signedProperties += "</etsi:SignedDataObjectProperties>\n";
-  signedProperties += "</etsi:SignedProperties>\n";
+  signedProperties += "</etsi:SignedProperties>";
 
   const sha1SignedProperties = sha1Base64(signedProperties.replace("<ets:SignedProperties", "<etsi:SignedProperties " + nameSpaces), "utf8");
 
@@ -284,7 +337,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   xadesBes += signature;
   xadesBes += "\n</ds:SignatureValue>";
   xadesBes += "\n" + keyInfo;
-  xadesBes += '\n<ds:Object Id="Signature' + signatureNumber + "-Object" + objectNumber + '">';
+  xadesBes += '\n<ds:Object Id="Signature' + signatureNumber + "-Object" + objectNumber + '">\n';
 
   xadesBes += '<etsi:QualifyingProperties Target="#Signature' + signatureNumber + '">\n';
   xadesBes += signedProperties;
