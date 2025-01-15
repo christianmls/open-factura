@@ -293,7 +293,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   signedProperties += "</etsi:SigningCertificate>";
   signedProperties += "</etsi:SignedSignatureProperties>";
   signedProperties += "<etsi:SignedDataObjectProperties>";
-  signedProperties += '<etsi:DataObjectFormat ObjectReference="#Reference-ID=' + referenceIdNumber + '">';
+  signedProperties += '<etsi:DataObjectFormat ObjectReference="#Reference-ID-' + referenceIdNumber + '">';
   signedProperties += "<etsi:Description>";
   signedProperties += "contenido comprobante";
   signedProperties += "</etsi:Description>";
@@ -343,7 +343,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   signedInfo += sha1KeyInfo;
   signedInfo += "</ds:DigestValue>";
   signedInfo += "\n</ds:Reference>";
-  signedInfo += '\n<ds:Reference Id="Reference-ID=' + referenceIdNumber + '" URI="#comprobante">';
+  signedInfo += '\n<ds:Reference Id="Reference-ID-' + referenceIdNumber + '" URI="#comprobante">';
   signedInfo += "\n<ds:Transforms>";
   signedInfo += '\n<ds:Transform Algorithm="http://www.w3.org/2000/09/xmlndsig#enveloped-signature">';
   signedInfo += "</ds:Transform>";
