@@ -1,11 +1,4 @@
-import {
-  documentAuthorization,
-  documentReception,
-  generateInvoice,
-  generateInvoiceXml,
-  getP12FromUrl,
-  signXml,
-} from "open-factura";
+import { documentAuthorization, documentReception, generateInvoice, generateInvoiceXml, getP12FromUrl, signXml } from "open-factura";
 
 const { invoice, accessKey } = generateInvoice({
   infoTributaria: {
@@ -322,15 +315,9 @@ const password = "yourpassword";
 
 const signedInvoice = await signXml(signature, password, invoiceXml);
 
-const receptionResult = await documentReception(
-  signedInvoice,
-  process.env.SRI_RECEPTION_URL!
-);
+const receptionResult = await documentReception(signedInvoice, process.env.SRI_RECEPTION_URL!);
 
-const authorizationResult = await documentAuthorization(
-  accessKey,
-  process.env.SRI_AUTHORIZATION_URL!
-);
+const authorizationResult = await documentAuthorization(accessKey, process.env.SRI_AUTHORIZATION_URL!);
 
 console.log(invoice);
 console.log(invoiceXml);

@@ -79,8 +79,6 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   });
   const certBag = certBags[(forge as any).oids.certBag];
 
-  console.log("certBag![0].attributes =>", certBag![0].cert?.issuer.attributes);
-
   let certificate;
   let pkcs8;
   let issuerName = "";
