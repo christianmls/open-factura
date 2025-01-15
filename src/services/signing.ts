@@ -144,7 +144,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
 
   const sha1_xml = sha1Base64(xml, "utf8");
 
-  console.log("sha1_xml: ", xml);
+  console.log("sha1_xml: ", sha1_xml);
 
   const nameSpaces = 'xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#"';
 

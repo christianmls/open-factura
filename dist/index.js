@@ -295,7 +295,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   const modulus = bigIntToBase64(key.n);
   xml = xml.replace('<?xml version="1.0"?>', "");
   const sha1_xml = sha1Base64(xml, "utf8");
-  console.log("sha1_xml: ", xml);
+  console.log("sha1_xml: ", sha1_xml);
   const nameSpaces = 'xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#"';
   const certificateNumber = getRandomNumber();
   const signatureNumber = getRandomNumber();
