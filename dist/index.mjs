@@ -254,7 +254,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   const certificateX509_serialNumber = parseInt(certificate.serialNumber, 16);
   const exponent = hexToBase64(key.e.data[0].toString(16));
   const modulus = bigIntToBase64(key.n);
-  xml = xml.replace(/\t|\r/g, "");
+  xml = xml.replace(/\t|\r/g, "").replace('<?xml version="1.0"?>', "");
   console.log("XML: ", xml);
   const sha1_xml = sha1Base64(xml, "utf8");
   const nameSpaces = 'xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#"';
