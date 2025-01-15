@@ -196,6 +196,9 @@ async function signXml(p12Data, p12Password, xmlData) {
   let xml = xmlData;
   xml = xml.replace(/\s+/g, " ");
   xml = xml.trim();
+  xml = xml.replace(/(?<=\>)(\r?\n)|(\r?\n)(?=\<\/)/g, "");
+  xml = xml.trim();
+  xml = xml.replace(/(?<=\>)(\s*)/g, "");
   const arrayUint8 = new Uint8Array(arrayBuffer);
   const base64 = forge.util.binary.base64.encode(arrayUint8);
   const der = forge.util.decode64(base64);
@@ -251,8 +254,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   const certificateX509_serialNumber = parseInt(certificate.serialNumber, 16);
   const exponent = hexToBase64(key.e.data[0].toString(16));
   const modulus = bigIntToBase64(key.n);
-  xml = xml.replace(/\t|\r/g, "");
-  const sha1_xml = sha1Base64(xml.replace('<?xml version="1.0" encoding="UTF-8"?>', ""), "utf8");
+  const sha1_xml = sha1Base64(xml.replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8" standalone="no"?>'), "utf8");
   const nameSpaces = 'xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#"';
   const certificateNumber = getRandomNumber();
   const signatureNumber = getRandomNumber();
