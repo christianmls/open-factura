@@ -1,6 +1,7 @@
 import { create } from "xmlbuilder2";
 import { Invoice, InvoiceInput } from "../baseData/invoice/invoice";
 import { generateAccessKey } from "../utils/utils";
+import { TaxInfo } from "../baseData/invoice/taxInfo";
 
 function parseDateFromDDMMYYYY(dateString: string): Date {
   const [day, month, year] = dateString.split("/").map(Number);
@@ -11,6 +12,25 @@ function parseDateFromDDMMYYYY(dateString: string): Date {
   }
 
   return date;
+}
+
+function reorderTaxInfo(taxInfo: TaxInfo): TaxInfo {
+  return {
+    ambiente: taxInfo.ambiente,
+    tipoEmision: taxInfo.tipoEmision,
+    razonSocial: taxInfo.razonSocial,
+    nombreComercial: taxInfo.nombreComercial,
+    ruc: taxInfo.ruc,
+    claveAcceso: taxInfo.claveAcceso,
+    codDoc: taxInfo.codDoc,
+    estab: taxInfo.estab,
+    ptoEmi: taxInfo.ptoEmi,
+    secuencial: taxInfo.secuencial,
+    dirMatriz: taxInfo.dirMatriz,
+    regimenMicroempresas: taxInfo.regimenMicroempresas,
+    agenteRetencion: taxInfo.agenteRetencion,
+    contribuyenteRimpe: taxInfo.contribuyenteRimpe,
+  };
 }
 
 export function generateInvoiceXml(invoice: Invoice) {
@@ -30,13 +50,15 @@ export function generateInvoice(invoiceData: InvoiceInput) {
     sequential: invoiceData.infoTributaria.secuencial,
   });
 
+  const infoTributariaData = { ...invoiceData.infoTributaria, claveAcceso: accessKey };
+
   const invoice: Invoice = {
     factura: {
       "@xmlns:ds": "http://www.w3.org/2000/09/xmldsig#",
       "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
       "@id": "comprobante",
       "@version": "1.0.0",
-      infoTributaria: { ...invoiceData.infoTributaria, claveAcceso: accessKey },
+      infoTributaria: reorderTaxInfo(infoTributariaData),
       infoFactura: invoiceData.infoFactura,
       detalles: invoiceData.detalles,
     },

@@ -26,9 +26,7 @@ export type TaxInfo = {
   dirMatriz: string;
   regimenMicroempresas?: "CONTRIBUYENTE RÉGIMEN MICROEMPRESAS";
   agenteRetencion?: string;
-  contribuyenteRimpe?:
-    | "CONTRIBUYENTE NEGOCIO POPULAR - RÉGIMEN RIMPE"
-    | "CONTRIBUYENTE RÉGIMEN RIMPE";
+  contribuyenteRimpe?: "CONTRIBUYENTE NEGOCIO POPULAR - RÉGIMEN RIMPE" | "CONTRIBUYENTE RÉGIMEN RIMPE";
 };
 
 export const taxInfo: TaxInfo = {

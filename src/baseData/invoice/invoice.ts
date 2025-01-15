@@ -1,15 +1,9 @@
 import { AdditionalInfo, additionalInfo } from "./additionalInfo";
 import { Details, details } from "./details";
 import { InvoiceInfo, invoiceInfo } from "./invoiceInfo";
-import {
-  OtherThirdPartyValues,
-  otherThirdPartyValues,
-} from "./otherThirdPartyValues";
+import { OtherThirdPartyValues, otherThirdPartyValues } from "./otherThirdPartyValues";
 import { Reimbursements, reimbursements } from "./reimbursements";
-import {
-  RemisionGuideSustitutiveInfo,
-  remisionGuideSustitutiveInfo,
-} from "./remissionGuidesSustitutiveInfo";
+import { RemisionGuideSustitutiveInfo, remisionGuideSustitutiveInfo } from "./remissionGuidesSustitutiveInfo";
 import { Retentions, retentions } from "./retentions";
 import { TaxInfo, taxInfo } from "./taxInfo";
 

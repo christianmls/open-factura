@@ -72,6 +72,24 @@ function parseDateFromDDMMYYYY(dateString) {
   }
   return date;
 }
+function reorderTaxInfo(taxInfo2) {
+  return {
+    ambiente: taxInfo2.ambiente,
+    tipoEmision: taxInfo2.tipoEmision,
+    razonSocial: taxInfo2.razonSocial,
+    nombreComercial: taxInfo2.nombreComercial,
+    ruc: taxInfo2.ruc,
+    claveAcceso: taxInfo2.claveAcceso,
+    codDoc: taxInfo2.codDoc,
+    estab: taxInfo2.estab,
+    ptoEmi: taxInfo2.ptoEmi,
+    secuencial: taxInfo2.secuencial,
+    dirMatriz: taxInfo2.dirMatriz,
+    regimenMicroempresas: taxInfo2.regimenMicroempresas,
+    agenteRetencion: taxInfo2.agenteRetencion,
+    contribuyenteRimpe: taxInfo2.contribuyenteRimpe
+  };
+}
 function generateInvoiceXml(invoice) {
   const document = create(invoice);
   const xml = document.end({ prettyPrint: true });
@@ -87,13 +105,14 @@ function generateInvoice(invoiceData) {
     emissionPoint: invoiceData.infoTributaria.ptoEmi,
     sequential: invoiceData.infoTributaria.secuencial
   });
+  const infoTributariaData = { ...invoiceData.infoTributaria, claveAcceso: accessKey };
   const invoice = {
     factura: {
       "@xmlns:ds": "http://www.w3.org/2000/09/xmldsig#",
       "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
       "@id": "comprobante",
       "@version": "1.0.0",
-      infoTributaria: { ...invoiceData.infoTributaria, claveAcceso: accessKey },
+      infoTributaria: reorderTaxInfo(infoTributariaData),
       infoFactura: invoiceData.infoFactura,
       detalles: invoiceData.detalles
     }
