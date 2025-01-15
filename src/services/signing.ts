@@ -4,10 +4,7 @@ import fetch from "node-fetch";
 
 export function getP12FromLocalFile(path: string) {
   const file = readFileSync(path);
-  const buffer = file.buffer.slice(
-    file.byteOffset,
-    file.byteOffset + file.byteLength
-  );
+  const buffer = file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength);
   return buffer;
 }
 
@@ -59,11 +56,7 @@ function getRandomNumber(min = 990, max = 9999) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export async function signXml(
-  p12Data: ArrayBuffer,
-  p12Password: string,
-  xmlData: string
-) {
+export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData: string) {
   const arrayBuffer = p12Data;
   let xml = xmlData;
   xml = xml.replace(/\s+/g, " ");
@@ -136,14 +129,9 @@ export async function signXml(
 
   let certificateX509 = certificateX509_pem;
   certificateX509 = certificateX509.substr(certificateX509.indexOf("\n"));
-  certificateX509 = certificateX509.substr(
-    0,
-    certificateX509.indexOf("\n-----END CERTIFICATE-----")
-  );
+  certificateX509 = certificateX509.substr(0, certificateX509.indexOf("\n-----END CERTIFICATE-----"));
 
-  certificateX509 = certificateX509
-    .replace(/\r?\n|\r/g, "")
-    .replace(/([^\0]{76})/g, "$1\n");
+  certificateX509 = certificateX509.replace(/\r?\n|\r/g, "").replace(/([^\0]{76})/g, "$1\n");
 
   const certificateX509_asn1 = forge.pki.certificateToAsn1(certificate!);
   const certificateX509_der = forge.asn1.toDer(certificateX509_asn1).getBytes();
@@ -155,13 +143,9 @@ export async function signXml(
 
   xml = xml.replace(/\t|\r/g, "");
 
-  const sha1_xml = sha1Base64(
-    xml.replace('<?xml version="1.0" encoding="UTF-8"?>', ""),
-    "utf8"
-  );
+  const sha1_xml = sha1Base64(xml.replace('<?xml version="1.0" encoding="UTF-8"?>', ""), "utf8");
 
-  const nameSpaces =
-    'xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#"';
+  const nameSpaces = 'xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#"';
 
   const certificateNumber = getRandomNumber();
   const signatureNumber = getRandomNumber();
@@ -175,12 +159,7 @@ export async function signXml(
   const isoDateTime = date.toISOString().slice(0, 19);
 
   let signedProperties = "";
-  signedProperties +=
-    '<etsi:SignedProperties Id="Signature' +
-    signatureNumber +
-    "-SignedProperties" +
-    signedPropertiesNumber +
-    '">';
+  signedProperties += '<etsi:SignedProperties Id="Signature' + signatureNumber + "-SignedProperties" + signedPropertiesNumber + '">';
 
   signedProperties += "<etsi:SignedSignatureProperties>";
   signedProperties += "<etsi:SigningTime>";
@@ -189,8 +168,7 @@ export async function signXml(
   signedProperties += "<etsi:SigningCertificate>";
   signedProperties += "<etsi:Cert>";
   signedProperties += "<etsi:CertDigest>";
-  signedProperties +=
-    '<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">';
+  signedProperties += '<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">';
   signedProperties += "</ds:DigestMethod>";
   signedProperties += "<ds:DigestValue>";
   signedProperties += hash_certificateX509_der;
@@ -209,10 +187,7 @@ export async function signXml(
   signedProperties += "</etsi:SignedSignatureProperties>";
 
   signedProperties += "<etsi:SignedDataObjectProperties>";
-  signedProperties +=
-    '<etsi:DataObjectFormat ObjectReference="#Reference-ID=' +
-    referenceIdNumber +
-    '">';
+  signedProperties += '<etsi:DataObjectFormat ObjectReference="#Reference-ID=' + referenceIdNumber + '">';
   signedProperties += "<etsi:Description>";
   signedProperties += "contenido comprobante";
   signedProperties += "</etsi:Description>";
@@ -223,13 +198,7 @@ export async function signXml(
   signedProperties += "</etsi:SignedDataObjectProperties>";
   signedProperties += "</etsi:SignedProperties>";
 
-  const sha1SignedProperties = sha1Base64(
-    signedProperties.replace(
-      "<ets:SignedProperties",
-      "<etsi:SignedProperties " + nameSpaces
-    ),
-    "utf8"
-  );
+  const sha1SignedProperties = sha1Base64(signedProperties.replace("<ets:SignedProperties", "<etsi:SignedProperties " + nameSpaces), "utf8");
 
   let keyInfo = "";
   keyInfo += '<ds:KeyInfo Id="Certificate' + certificateNumber + '">';
@@ -250,19 +219,13 @@ export async function signXml(
   keyInfo += "\n</ds:KeyValue>";
   keyInfo += "\n</ds:KeyInfo>";
 
-  const sha1KeyInfo = sha1Base64(
-    keyInfo.replace("<ds:KeyInfo", "<ds:KeyInfo " + nameSpaces),
-    "utf8"
-  );
+  const sha1KeyInfo = sha1Base64(keyInfo.replace("<ds:KeyInfo", "<ds:KeyInfo " + nameSpaces), "utf8");
 
   let signedInfo = "";
-  signedInfo +=
-    '<ds:SignedInfo Id="Signature-SignedInfo' + signedInfoNumber + '">';
-  signedInfo +=
-    '\n<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315">';
+  signedInfo += '<ds:SignedInfo Id="Signature-SignedInfo' + signedInfoNumber + '">';
+  signedInfo += '\n<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315">';
   signedInfo += "</ds:CanonicalizationMethod>";
-  signedInfo +=
-    '\n<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1">';
+  signedInfo += '\n<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1">';
   signedInfo += "</ds:SignatureMethod>";
   signedInfo +=
     '\n<ds:Reference Id="SignedPropertiesID' +
@@ -272,33 +235,26 @@ export async function signXml(
     "-SignedProperties" +
     signedPropertiesNumber +
     '">';
-  signedInfo +=
-    '\n<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">';
+  signedInfo += '\n<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">';
   signedInfo += "</ds:DigestMethod>";
   signedInfo += "\n<ds:DigestValue>";
   signedInfo += sha1SignedProperties;
   signedInfo += "</ds:DigestValue>";
   signedInfo += "\n</ds:Reference>";
   signedInfo += '\n<ds:Reference URI="#Certificate' + certificateNumber + '">';
-  signedInfo +=
-    '\n<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">';
+  signedInfo += '\n<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">';
   signedInfo += "</ds:DigestMethod>";
   signedInfo += "\n<ds:DigestValue>";
   signedInfo += sha1KeyInfo;
   signedInfo += "</ds:DigestValue>";
   signedInfo += "\n</ds:Reference>";
 
-  signedInfo +=
-    '\n<ds:Reference Id="Reference-ID' +
-    referenceIdNumber +
-    '" URI="#comprobante">';
+  signedInfo += '\n<ds:Reference Id="Reference-ID' + referenceIdNumber + '" URI="#comprobante">';
   signedInfo += "\n<ds:Transforms>";
-  signedInfo +=
-    '\n<ds:Transform Algorithm="http://www.w3.org/2000/09/xmlndsig#enveloped-signature">';
+  signedInfo += '\n<ds:Transform Algorithm="http://www.w3.org/2000/09/xmlndsig#enveloped-signature">';
   signedInfo += "</ds:Transform>";
   signedInfo += "\n</ds:Transforms>";
-  signedInfo +=
-    '\n<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">';
+  signedInfo += '\n<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">';
   signedInfo += "</ds:DigestMethod>";
   signedInfo += "\n<ds:DigestValue>";
   signedInfo += sha1_xml;
@@ -307,10 +263,7 @@ export async function signXml(
 
   signedInfo += "\n</ds:SignedInfo>";
 
-  const canonicalizedSignedInfo = signedInfo.replace(
-    "<ds:SignedInfo",
-    "<ds:SignedInfo " + nameSpaces
-  );
+  const canonicalizedSignedInfo = signedInfo.replace("<ds:SignedInfo", "<ds:SignedInfo " + nameSpaces);
 
   const md = forge.md.sha1.create();
   md.update(canonicalizedSignedInfo, "utf8");
@@ -323,25 +276,17 @@ export async function signXml(
   );
 
   let xadesBes = "";
-  xadesBes +=
-    "<ds:Signature " + nameSpaces + ' Id="Signature' + signatureNumber + '">';
+  xadesBes += "<ds:Signature " + nameSpaces + ' Id="Signature' + signatureNumber + '">';
   xadesBes += "\n" + signedInfo;
 
-  xadesBes +=
-    '\n<ds:SignatureValue Id="SignatureValue' + signatureValueNumber + '">\n';
+  xadesBes += '\n<ds:SignatureValue Id="SignatureValue' + signatureValueNumber + '">\n';
 
   xadesBes += signature;
   xadesBes += "\n</ds:SignatureValue>";
   xadesBes += "\n" + keyInfo;
-  xadesBes +=
-    '\n<ds:Object Id="Signature' +
-    signatureNumber +
-    "-Object" +
-    objectNumber +
-    '">';
+  xadesBes += '\n<ds:Object Id="Signature' + signatureNumber + "-Object" + objectNumber + '">';
 
-  xadesBes +=
-    '<etsi:QualifyingProperties Target="#Signature' + signatureNumber + '">';
+  xadesBes += '<etsi:QualifyingProperties Target="#Signature' + signatureNumber + '">';
   xadesBes += signedProperties;
 
   xadesBes += "</etsi:QualifyingProperties>";

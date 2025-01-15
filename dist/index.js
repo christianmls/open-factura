@@ -168,10 +168,7 @@ var import_fs = require("fs");
 var import_node_fetch = __toESM(require("node-fetch"));
 function getP12FromLocalFile(path) {
   const file = (0, import_fs.readFileSync)(path);
-  const buffer = file.buffer.slice(
-    file.byteOffset,
-    file.byteOffset + file.byteLength
-  );
+  const buffer = file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength);
   return buffer;
 }
 async function getP12FromUrl(url) {
@@ -267,10 +264,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   const certificateX509_pem = forge.pki.certificateToPem(certificate);
   let certificateX509 = certificateX509_pem;
   certificateX509 = certificateX509.substr(certificateX509.indexOf("\n"));
-  certificateX509 = certificateX509.substr(
-    0,
-    certificateX509.indexOf("\n-----END CERTIFICATE-----")
-  );
+  certificateX509 = certificateX509.substr(0, certificateX509.indexOf("\n-----END CERTIFICATE-----"));
   certificateX509 = certificateX509.replace(/\r?\n|\r/g, "").replace(/([^\0]{76})/g, "$1\n");
   const certificateX509_asn1 = forge.pki.certificateToAsn1(certificate);
   const certificateX509_der = forge.asn1.toDer(certificateX509_asn1).getBytes();
@@ -279,10 +273,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   const exponent = hexToBase64(key.e.data[0].toString(16));
   const modulus = bigIntToBase64(key.n);
   xml = xml.replace(/\t|\r/g, "");
-  const sha1_xml = sha1Base64(
-    xml.replace('<?xml version="1.0" encoding="UTF-8"?>', ""),
-    "utf8"
-  );
+  const sha1_xml = sha1Base64(xml.replace('<?xml version="1.0" encoding="UTF-8"?>', ""), "utf8");
   const nameSpaces = 'xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#"';
   const certificateNumber = getRandomNumber();
   const signatureNumber = getRandomNumber();
@@ -330,13 +321,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   signedProperties += "</etsi:DataObjectFormat>";
   signedProperties += "</etsi:SignedDataObjectProperties>";
   signedProperties += "</etsi:SignedProperties>";
-  const sha1SignedProperties = sha1Base64(
-    signedProperties.replace(
-      "<ets:SignedProperties",
-      "<etsi:SignedProperties " + nameSpaces
-    ),
-    "utf8"
-  );
+  const sha1SignedProperties = sha1Base64(signedProperties.replace("<ets:SignedProperties", "<etsi:SignedProperties " + nameSpaces), "utf8");
   let keyInfo = "";
   keyInfo += '<ds:KeyInfo Id="Certificate' + certificateNumber + '">';
   keyInfo += "\n<ds:X509Data>";
@@ -355,10 +340,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   keyInfo += "\n</ds:RSAKeyValue>";
   keyInfo += "\n</ds:KeyValue>";
   keyInfo += "\n</ds:KeyInfo>";
-  const sha1KeyInfo = sha1Base64(
-    keyInfo.replace("<ds:KeyInfo", "<ds:KeyInfo " + nameSpaces),
-    "utf8"
-  );
+  const sha1KeyInfo = sha1Base64(keyInfo.replace("<ds:KeyInfo", "<ds:KeyInfo " + nameSpaces), "utf8");
   let signedInfo = "";
   signedInfo += '<ds:SignedInfo Id="Signature-SignedInfo' + signedInfoNumber + '">';
   signedInfo += '\n<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315">';
@@ -391,10 +373,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   signedInfo += "</ds:DigestValue>";
   signedInfo += "\n</ds:Reference>";
   signedInfo += "\n</ds:SignedInfo>";
-  const canonicalizedSignedInfo = signedInfo.replace(
-    "<ds:SignedInfo",
-    "<ds:SignedInfo " + nameSpaces
-  );
+  const canonicalizedSignedInfo = signedInfo.replace("<ds:SignedInfo", "<ds:SignedInfo " + nameSpaces);
   const md2 = forge.md.sha1.create();
   md2.update(canonicalizedSignedInfo, "utf8");
   const signature = btoa(
