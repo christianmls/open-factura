@@ -164,6 +164,39 @@ function bigIntToBase64(bigInt) {
 function getRandomNumber(min = 990, max = 9999) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
+function processP12(p12Data, password) {
+  const arrayUint8 = new Uint8Array(p12Data);
+  const base64 = forge.util.binary.base64.encode(arrayUint8);
+  const der = forge.util.decode64(base64);
+  const asn12 = forge.asn1.fromDer(der);
+  const p12 = forge.pkcs12.pkcs12FromAsn1(asn12, password);
+  const certBags = p12.getBags({ bagType: forge.pki.oids.certBag });
+  const pkcs8Bags = p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag });
+  const certBag = certBags[forge.pki.oids.certBag];
+  const pkcs8Bag = pkcs8Bags[forge.pki.oids.pkcs8ShroudedKeyBag];
+  if (!certBag || certBag.length === 0) {
+    throw new Error("No certificates found in the P12 file.");
+  }
+  const friendlyName = certBag[0]?.attributes?.friendlyName?.[0] || "Unknown";
+  const certificate = certBag[0]?.cert;
+  const privateKey = pkcs8Bag?.[0]?.key;
+  if (!certificate || !privateKey) {
+    throw new Error("Certificate or private key is missing in the P12 file.");
+  }
+  const notBefore = certificate.validity.notBefore;
+  const notAfter = certificate.validity.notAfter;
+  const currentDate = /* @__PURE__ */ new Date();
+  if (currentDate < notBefore || currentDate > notAfter) {
+    throw new Error("The certificate is expired or not yet valid.");
+  }
+  return {
+    friendlyName,
+    certificate,
+    privateKey,
+    notBefore,
+    notAfter
+  };
+}
 async function signXml(p12Data, p12Password, xmlData) {
   const arrayBuffer = p12Data;
   let xml = xmlData;
@@ -184,8 +217,8 @@ async function signXml(p12Data, p12Password, xmlData) {
     bagType: forge.pki.oids.certBag
   });
   const certBag = certBags[forge.oids.certBag];
-  console.log("p12=>", p12);
-  console.log("certBag=>", certBag);
+  const certificado = processP12(p12Data, p12Password);
+  console.log("certificado=>", certificado);
   const friendlyName = certBag[1].attributes.friendlyName[0];
   let certificate;
   let pkcs8;
