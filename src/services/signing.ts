@@ -56,6 +56,55 @@ function getRandomNumber(min = 990, max = 9999) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+export function processP12(p12Data: ArrayBuffer, password: string) {
+  // Convierte el ArrayBuffer a un formato compatible
+  const arrayUint8 = new Uint8Array(p12Data);
+  const base64 = forge.util.binary.base64.encode(arrayUint8);
+  const der = forge.util.decode64(base64);
+
+  // Decodifica el archivo .p12 usando la contraseña
+  const asn1 = forge.asn1.fromDer(der);
+  const p12 = forge.pkcs12.pkcs12FromAsn1(asn1, password);
+
+  // Obtiene las bolsas (bags) del archivo .p12
+  const certBags = p12.getBags({ bagType: forge.pki.oids.certBag });
+  const pkcs8Bags = p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag });
+
+  const certBag = certBags[forge.pki.oids.certBag];
+  const pkcs8Bag = pkcs8Bags[forge.pki.oids.pkcs8ShroudedKeyBag];
+
+  if (!certBag || certBag.length === 0) {
+    throw new Error("No certificates found in the P12 file.");
+  }
+
+  // Extraer información clave
+  const friendlyName = certBag[0]?.attributes?.friendlyName?.[0] || "Unknown";
+  const certificate = certBag[0]?.cert;
+  const privateKey = pkcs8Bag?.[0]?.key;
+
+  if (!certificate || !privateKey) {
+    throw new Error("Certificate or private key is missing in the P12 file.");
+  }
+
+  // Opcional: Verifica fechas de validez
+  const notBefore = certificate.validity.notBefore;
+  const notAfter = certificate.validity.notAfter;
+  const currentDate = new Date();
+
+  if (currentDate < notBefore || currentDate > notAfter) {
+    throw new Error("The certificate is expired or not yet valid.");
+  }
+
+  // Retorna la información clave
+  return {
+    friendlyName,
+    certificate,
+    privateKey,
+    notBefore,
+    notAfter,
+  };
+}
+
 export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData: string) {
   const arrayBuffer = p12Data;
   let xml = xmlData;
@@ -79,8 +128,8 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   });
   const certBag = certBags[(forge as any).oids.certBag];
 
-  console.log("p12=>", p12);
-  console.log("certBag=>", certBag);
+  const certificado = processP12(p12Data, p12Password);
+  console.log("certificado=>", certificado);
 
   const friendlyName = certBag![1].attributes.friendlyName[0];
 
