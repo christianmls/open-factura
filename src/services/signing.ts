@@ -160,31 +160,31 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   const isoDateTime = date.toISOString(); //.slice(0, 19)
 
   let signedProperties = "";
-  signedProperties += '<etsi:SignedProperties Id="Signature' + signatureNumber + "-SignedProperties" + signedPropertiesNumber + '">';
+  signedProperties += '<etsi:SignedProperties Id="Signature' + signatureNumber + "-SignedProperties" + signedPropertiesNumber + '">\n';
 
-  signedProperties += "<etsi:SignedSignatureProperties>";
+  signedProperties += "<etsi:SignedSignatureProperties>\n";
   signedProperties += "<etsi:SigningTime>";
   signedProperties += isoDateTime;
-  signedProperties += "</etsi:SigningTime>";
-  signedProperties += "<etsi:SigningCertificate>";
-  signedProperties += "<etsi:Cert>";
-  signedProperties += "<etsi:CertDigest>";
-  signedProperties += '<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">';
-  signedProperties += "</ds:DigestMethod>";
+  signedProperties += "</etsi:SigningTime>\n";
+  signedProperties += "<etsi:SigningCertificate>\n";
+  signedProperties += "<etsi:Cert>\n";
+  signedProperties += "<etsi:CertDigest>\n";
+  signedProperties += '<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>\n';
+  //signedProperties += "</ds:DigestMethod>";
   signedProperties += "<ds:DigestValue>";
   signedProperties += hash_certificateX509_der;
-  signedProperties += "</ds:DigestValue>";
-  signedProperties += "</etsi:CertDigest>";
-  signedProperties += "<etsi:IssuerSerial>";
+  signedProperties += "</ds:DigestValue>\n";
+  signedProperties += "</etsi:CertDigest>\n";
+  signedProperties += "<etsi:IssuerSerial>\n";
   signedProperties += "<ds:X509IssuerName>";
   signedProperties += issuerName;
-  signedProperties += "</ds:X509IssuerName>";
+  signedProperties += "</ds:X509IssuerName>\n";
   signedProperties += "<ds:X509SerialNumber>";
   signedProperties += certificateX509_serialNumber;
-  signedProperties += "</ds:X509SerialNumber>";
-  signedProperties += "</etsi:IssuerSerial>";
-  signedProperties += "</etsi:Cert>";
-  signedProperties += "</etsi:SigningCertificate>";
+  signedProperties += "</ds:X509SerialNumber>\n";
+  signedProperties += "</etsi:IssuerSerial>\n";
+  signedProperties += "</etsi:Cert>\n";
+  signedProperties += "</etsi:SigningCertificate>\n";
   signedProperties += "</etsi:SignedSignatureProperties>";
 
   signedProperties += "<etsi:SignedDataObjectProperties>";
@@ -290,7 +290,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   xadesBes += signedProperties;
   xadesBes += "\n</etsi:QualifyingProperties>";
   xadesBes += "\n</ds:Object>";
-  xadesBes += "\n</ds:Signature>";
+  xadesBes += "\n</ds:Signature>\n";
 
   console.log("sha1_xml: ", sha1Base64(xml, "utf8"));
 
