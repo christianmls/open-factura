@@ -255,7 +255,7 @@ async function signXml(p12Data, p12Password, xmlData) {
     bagType: forge.pki.oids.certBag
   });
   const certBag = certBags[forge.oids.certBag];
-  console.log("certBag![0].attributes =========", certBag[0].cert?.issuer.attributes);
+  console.log("certBag![0].attributes =>", certBag[0].cert?.issuer.attributes);
   let certificate;
   let pkcs8;
   let issuerName = "";
@@ -388,7 +388,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   signedInfo += sha1KeyInfo;
   signedInfo += "</ds:DigestValue>";
   signedInfo += "\n</ds:Reference>";
-  signedInfo += '\n<ds:Reference Id="Reference-ID' + referenceIdNumber + '" URI="#comprobante">';
+  signedInfo += '\n<ds:Reference Id="Reference-ID=' + referenceIdNumber + '" URI="#comprobante">';
   signedInfo += "\n<ds:Transforms>";
   signedInfo += '\n<ds:Transform Algorithm="http://www.w3.org/2000/09/xmlndsig#enveloped-signature">';
   signedInfo += "</ds:Transform>";
