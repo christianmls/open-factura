@@ -213,9 +213,9 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   keyInfo += "\n<ds:Modulus>\n";
   keyInfo += modulus;
   keyInfo += "\n</ds:Modulus>";
-  keyInfo += "\n<ds:Exponent>\n";
+  keyInfo += "\n<ds:Exponent>";
   keyInfo += exponent;
-  keyInfo += "\n</ds:Exponent>";
+  keyInfo += "</ds:Exponent>";
   keyInfo += "\n</ds:RSAKeyValue>";
   keyInfo += "\n</ds:KeyValue>";
   keyInfo += "\n</ds:KeyInfo>";
@@ -286,12 +286,11 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   xadesBes += "\n" + keyInfo;
   xadesBes += '\n<ds:Object Id="Signature' + signatureNumber + "-Object" + objectNumber + '">';
 
-  xadesBes += '<etsi:QualifyingProperties Target="#Signature' + signatureNumber + '">';
+  xadesBes += '<etsi:QualifyingProperties Target="#Signature' + signatureNumber + '">\n';
   xadesBes += signedProperties;
-
-  xadesBes += "</etsi:QualifyingProperties>";
-  xadesBes += "</ds:Object>";
-  xadesBes += "</ds:Signature>";
+  xadesBes += "\n</etsi:QualifyingProperties>";
+  xadesBes += "\n</ds:Object>";
+  xadesBes += "\n</ds:Signature>";
 
   console.log("sha1_xml: ", sha1Base64(xml, "utf8"));
 
