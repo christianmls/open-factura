@@ -224,8 +224,8 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
 
   let signedInfo = "";
   signedInfo += '<ds:SignedInfo Id="Signature-SignedInfo' + signedInfoNumber + '">';
-  signedInfo += '\n<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315">';
-  signedInfo += "</ds:CanonicalizationMethod>";
+  signedInfo += '\n<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>';
+  //signedInfo += "</ds:CanonicalizationMethod>";
   signedInfo += '\n<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1">';
   signedInfo += "</ds:SignatureMethod>";
   signedInfo +=

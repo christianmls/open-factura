@@ -321,8 +321,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   const sha1KeyInfo = sha1Base64(keyInfo.replace("<ds:KeyInfo", "<ds:KeyInfo " + nameSpaces), "utf8");
   let signedInfo = "";
   signedInfo += '<ds:SignedInfo Id="Signature-SignedInfo' + signedInfoNumber + '">';
-  signedInfo += '\n<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315">';
-  signedInfo += "</ds:CanonicalizationMethod>";
+  signedInfo += '\n<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>';
   signedInfo += '\n<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1">';
   signedInfo += "</ds:SignatureMethod>";
   signedInfo += '\n<ds:Reference Id="SignedPropertiesID' + signedPropertiesIdNumber + '" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature' + signatureNumber + "-SignedProperties" + signedPropertiesNumber + '">';
