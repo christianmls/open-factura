@@ -59,11 +59,11 @@ function getRandomNumber(min = 990, max = 9999) {
 export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData: string) {
   const arrayBuffer = p12Data;
   let xml = xmlData;
-  xml = xml.replace(/\s+/g, " ");
-  xml = xml.trim();
-  xml = xml.replace(/(?<=\>)(\r?\n)|(\r?\n)(?=\<\/)/g, "");
-  xml = xml.trim();
-  xml = xml.replace(/(?<=\>)(\s*)/g, "");
+  // xml = xml.replace(/\s+/g, " ");
+  // xml = xml.trim();
+  // xml = xml.replace(/(?<=\>)(\r?\n)|(\r?\n)(?=\<\/)/g, "");
+  // xml = xml.trim();
+  // xml = xml.replace(/(?<=\>)(\s*)/g, "");
 
   const arrayUint8 = new Uint8Array(arrayBuffer);
   const base64 = forge.util.binary.base64.encode(arrayUint8);
@@ -139,11 +139,12 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   const exponent = hexToBase64(key.e.data[0].toString(16));
   const modulus = bigIntToBase64(key.n);
 
-  const xml_final = xml.replace(/\t|\r/g, ""); //.replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8" standalone="no"?>')
+  xml = xml.replace(/\t|\r/g, ""); //.replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8" standalone="no"?>')
+  xml = xml.replace('<?xml version="1.0"?>', "");
 
-  const sha1_xml = sha1Base64(xml_final, "utf8");
+  const sha1_xml = sha1Base64(xml, "utf8");
 
-  console.log("sha1_xml: ", sha1_xml);
+  console.log("sha1_xml: ", xml);
 
   const nameSpaces = 'xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#"';
 
@@ -293,9 +294,6 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   xadesBes += "</ds:Object>";
   xadesBes += "</ds:Signature>";
 
-  console.log("sha1_xml: ", sha1Base64(xml, "utf8"));
-
-  xml = xml.replace(/<\/factura>\s*$/, xadesBes + "</factura>");
   console.log("sha1_xml: ", sha1Base64(xml, "utf8"));
 
   console.log("XML: ", xml);
