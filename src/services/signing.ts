@@ -79,9 +79,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   });
   const certBag = certBags[(forge as any).oids.certBag];
 
-  console.log("certBag![1].attributes =========", certBag![0].attributes);
-
-  const friendlyName = certBag![0].attributes.friendlyName[0];
+  console.log("certBag![0].attributes =========", certBag![0].cert?.issuer.attributes);
 
   let certificate;
   let pkcs8;
@@ -101,7 +99,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
     })
     .join(", ");
 
-  if (/BANCO CENTRAL/i.test(friendlyName)) {
+  if (/BANCO CENTRAL/i.test(issuerName)) {
     let keys = pkcs8Bags[(forge as any).oids.pkcs8ShroudedKeyBag];
     for (let i = 0; i < keys!.length; i++) {
       const element = keys![i];
@@ -112,7 +110,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
     }
   }
 
-  if (/SECURITY DATA/i.test(friendlyName)) {
+  if (/SECURITY DATA/i.test(issuerName)) {
     pkcs8 = pkcs8Bags[(forge as any).oids.pkcs8ShroudedKeyBag]![0];
   }
 
