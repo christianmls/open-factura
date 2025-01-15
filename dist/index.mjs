@@ -211,8 +211,8 @@ async function signXml(p12Data, p12Password, xmlData) {
     bagType: forge.pki.oids.certBag
   });
   const certBag = certBags[forge.oids.certBag];
-  console.log("certBag![1].attributes =========", certBag[1].attributes);
-  const friendlyName = certBag[1].attributes.friendlyName[0];
+  console.log("certBag![1].attributes =========", certBag[0].attributes);
+  const friendlyName = certBag[0].attributes.friendlyName[0];
   let certificate;
   let pkcs8;
   let issuerName = "";
