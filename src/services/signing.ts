@@ -42,7 +42,7 @@ function hexToBase64(hex: string) {
   return btoa(String.fromCharCode(...bytes));
 }
 
-function bigIntToBase64(bigInt: number) {
+function bigIntToBase64(bigInt: forge.jsbn.BigInteger) {
   const hex = bigInt.toString(16);
   const hexPairs = hex.match(/\w{2}/g);
   const bytes = hexPairs!.map((pair) => parseInt(pair, 16));
@@ -89,7 +89,7 @@ export function processP12(p12Data: ArrayBuffer, password: string) {
   const certificate: forge.pki.Certificate = certBag[0].cert as forge.pki.Certificate;
 
   // Extraer clave privada
-  const key: forge.pki.PrivateKey = pkcs8Bag[0].key as forge.pki.PrivateKey;
+  const key: forge.pki.rsa.PrivateKey = pkcs8Bag[0].key as forge.pki.rsa.PrivateKey;
 
   // Convertir el certificado a formato PEM
   const certificateX509_pem: string = forge.pki.certificateToPem(certificate);
@@ -118,7 +118,6 @@ export function processP12(p12Data: ArrayBuffer, password: string) {
 }
 
 export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData: string) {
-  const arrayBuffer = p12Data;
   let xml = xmlData;
   xml = xml.replace(/\s+/g, " ");
   xml = xml.trim();
@@ -126,70 +125,19 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   xml = xml.trim();
   xml = xml.replace(/(?<=\>)(\s*)/g, "");
 
-  const arrayUint8 = new Uint8Array(arrayBuffer);
-  const base64 = forge.util.binary.base64.encode(arrayUint8);
-  const der = forge.util.decode64(base64);
+  const certificateData = processP12(p12Data, p12Password);
+  const issuerName = certificateData.issuerName;
+  const certificate = certificateData.certificate;
+  const notBefore = certificateData.notBefore;
+  const notAfter = certificateData.notAfter;
+  const key = certificateData.key;
+  const certificateX509_pem = certificateData.certificateX509_pem;
 
-  const asn1 = forge.asn1.fromDer(der);
-  const p12 = forge.pkcs12.pkcs12FromAsn1(asn1, p12Password);
-  const pkcs8Bags = p12.getBags({
-    bagType: forge.pki.oids.pkcs8ShroudedKeyBag,
-  });
-  const certBags = p12.getBags({
-    bagType: forge.pki.oids.certBag,
-  });
-  const certBag = certBags[(forge as any).oids.certBag];
-
-  const certificado = processP12(p12Data, p12Password);
-  console.log("certificado=>", certificado);
-
-  const friendlyName = certBag![1].attributes.friendlyName[0];
-
-  let certificate;
-  let pkcs8;
-  let issuerName = "";
-
-  const cert = certBag!.reduce((prev, curr) => {
-    const attributes = curr.cert!.extensions;
-    return attributes.length > prev.cert!.extensions.length ? curr : prev;
-  });
-
-  const issueAttributes = cert.cert!.issuer.attributes;
-
-  issuerName = issueAttributes
-    .reverse()
-    .map((attribute) => {
-      return `${attribute.shortName}=${attribute.value}`;
-    })
-    .join(", ");
-
-  if (/BANCO CENTRAL/i.test(friendlyName)) {
-    let keys = pkcs8Bags[(forge as any).oids.pkcs8ShroudedKeyBag];
-    for (let i = 0; i < keys!.length; i++) {
-      const element = keys![i];
-      let name = element.attributes.friendlyName[0];
-      if (/Signing Key/i.test(name)) {
-        pkcs8 = pkcs8Bags[(forge as any).oids.pkcs8ShroudedKeyBag[i]];
-      }
-    }
-  }
-
-  if (/SECURITY DATA/i.test(friendlyName)) {
-    pkcs8 = pkcs8Bags[(forge as any).oids.pkcs8ShroudedKeyBag]![0];
-  }
-
-  certificate = cert.cert;
-
-  const notBefore = certificate!.validity["notBefore"];
-  const notAfter = certificate!.validity["notAfter"];
   const date = new Date();
 
   if (date < notBefore || date > notAfter) {
     throw new Error("Expired certificate");
   }
-
-  const key = (pkcs8 as any).key ?? (pkcs8 as any).asn1;
-  const certificateX509_pem = forge.pki.certificateToPem(certificate!);
 
   let certificateX509 = certificateX509_pem;
   certificateX509 = certificateX509.substr(certificateX509.indexOf("\n"));
@@ -336,7 +284,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
     key
       .sign(md)
       .match(/.{1,76}/g)
-      .join("\n")
+      ?.join("\n") || ""
   );
 
   let xadesBes = "";
