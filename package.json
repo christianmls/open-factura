@@ -15,7 +15,7 @@
     "url": "https://github.com/miguelangarano/open-factura.git"
   },
   "scripts": {
-    "build": "tsup & git add . & git commit -m 'v0.3.7'",
+    "build": "tsup & git add . & git commit -m 'v0.3.8' & git push origin main",
     "start": "tsc ./src/index.ts",
     "publish-changes": "npm run build & npm link & npm link open-factura & npm publish"
   },
