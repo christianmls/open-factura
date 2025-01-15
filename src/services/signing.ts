@@ -226,8 +226,8 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   signedInfo += '<ds:SignedInfo Id="Signature-SignedInfo' + signedInfoNumber + '">';
   signedInfo += '\n<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>';
   //signedInfo += "</ds:CanonicalizationMethod>";
-  signedInfo += '\n<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1">';
-  signedInfo += "</ds:SignatureMethod>";
+  signedInfo += '\n<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>';
+  //signedInfo += "</ds:SignatureMethod>";
   signedInfo +=
     '\n<ds:Reference Id="SignedPropertiesID' +
     signedPropertiesIdNumber +
@@ -236,15 +236,15 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
     "-SignedProperties" +
     signedPropertiesNumber +
     '">';
-  signedInfo += '\n<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">';
-  signedInfo += "</ds:DigestMethod>";
+  signedInfo += '\n<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>';
+  //signedInfo += "</ds:DigestMethod>";
   signedInfo += "\n<ds:DigestValue>";
   signedInfo += sha1SignedProperties;
   signedInfo += "</ds:DigestValue>";
   signedInfo += "\n</ds:Reference>";
   signedInfo += '\n<ds:Reference URI="#Certificate' + certificateNumber + '">';
-  signedInfo += '\n<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">';
-  signedInfo += "</ds:DigestMethod>";
+  signedInfo += '\n<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>';
+  //signedInfo += "</ds:DigestMethod>";
   signedInfo += "\n<ds:DigestValue>";
   signedInfo += sha1KeyInfo;
   signedInfo += "</ds:DigestValue>";
@@ -252,11 +252,11 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
 
   signedInfo += '\n<ds:Reference Id="Reference-ID-' + referenceIdNumber + '" URI="#comprobante">';
   signedInfo += "\n<ds:Transforms>";
-  signedInfo += '\n<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature">';
-  signedInfo += "</ds:Transform>";
+  signedInfo += '\n<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>';
+  //signedInfo += "</ds:Transform>";
   signedInfo += "\n</ds:Transforms>";
-  signedInfo += '\n<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">';
-  signedInfo += "</ds:DigestMethod>";
+  signedInfo += '\n<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>';
+  //signedInfo += "</ds:DigestMethod>";
   signedInfo += "\n<ds:DigestValue>";
   signedInfo += sha1_xml;
   signedInfo += "</ds:DigestValue>";
@@ -281,7 +281,6 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   xadesBes += "\n" + signedInfo;
 
   xadesBes += '\n<ds:SignatureValue Id="SignatureValue' + signatureValueNumber + '">\n';
-
   xadesBes += signature;
   xadesBes += "\n</ds:SignatureValue>";
   xadesBes += "\n" + keyInfo;
