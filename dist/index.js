@@ -237,10 +237,8 @@ function getRandomNumber(min = 990, max = 9999) {
 }
 async function signXml(p12Data, p12Password, xmlData) {
   const arrayBuffer = p12Data;
-  let xml = xmlData.toString();
+  let xml = xmlData;
   xml = xml.replace(/\s+/g, " ");
-  xml = xml.trim();
-  xml = xml.replace(/(?<=\>)(\s*)/g, "");
   xml = xml.trim();
   const arrayUint8 = new Uint8Array(arrayBuffer);
   const base64 = forge.util.binary.base64.encode(arrayUint8);
