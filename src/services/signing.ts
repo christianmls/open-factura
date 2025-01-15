@@ -139,7 +139,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   const exponent = hexToBase64(key.e.data[0].toString(16));
   const modulus = bigIntToBase64(key.n);
 
-  const xml_final = xml.replace(/\t|\r/g, "").replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8" standalone="no"?>');
+  const xml_final = xml.replace(/\t|\r/g, ""); //.replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8" standalone="no"?>')
 
   const sha1_xml = sha1Base64(xml_final, "utf8");
 
@@ -292,6 +292,8 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   xadesBes += "</etsi:QualifyingProperties>";
   xadesBes += "</ds:Object>";
   xadesBes += "</ds:Signature>";
+
+  console.log("sha1_xml: ", xml);
 
   xml = xml.replace(/<\/factura>\s*$/, xadesBes + "</factura>");
 
