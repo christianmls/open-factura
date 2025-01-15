@@ -193,9 +193,10 @@ async function documentReception(stringXML, receptionUrl) {
 var forge = __toESM(require("node-forge"));
 var import_fs = require("fs");
 var import_node_fetch = __toESM(require("node-fetch"));
+var import_path = __toESM(require("path"));
 var import_child_process = require("child_process");
-function getP12FromLocalFile(path) {
-  const file = (0, import_fs.readFileSync)(path);
+function getP12FromLocalFile(path2) {
+  const file = (0, import_fs.readFileSync)(path2);
   const buffer = file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength);
   return buffer;
 }
@@ -203,8 +204,8 @@ async function getP12FromUrl(url) {
   const file = await (0, import_node_fetch.default)(url).then((response) => response.arrayBuffer()).then((data) => data);
   return file;
 }
-function getXMLFromLocalFile(path) {
-  const file = (0, import_fs.readFileSync)(path, "utf8");
+function getXMLFromLocalFile(path2) {
+  const file = (0, import_fs.readFileSync)(path2, "utf8");
   return file;
 }
 async function getXMLFromLocalUrl(url) {
@@ -215,7 +216,7 @@ async function signXml(p12Data, p12Password, xmlData) {
   const xmlBase64 = Buffer.from(xmlData, "utf-8").toString("base64");
   const p12Base64 = Buffer.from(p12Data).toString("base64");
   const passwordBase64 = Buffer.from(p12Password, "utf-8").toString("base64");
-  const JAR_PATH = "firma/firmaXadesBes.jar";
+  const JAR_PATH = import_path.default.resolve(__dirname, "firma/firmaXadesBes.jar");
   const JAVA_CMD = "java";
   return new Promise((resolve, reject) => {
     const command = ["-jar", JAR_PATH, xmlBase64, p12Base64, passwordBase64];

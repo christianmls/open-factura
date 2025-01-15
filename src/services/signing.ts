@@ -1,6 +1,7 @@
 import * as forge from "node-forge";
 import { readFileSync } from "fs";
 import fetch from "node-fetch";
+import path from "path";
 import { spawn } from "child_process";
 
 export function getP12FromLocalFile(path: string) {
@@ -64,7 +65,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   const passwordBase64 = Buffer.from(p12Password, "utf-8").toString("base64");
 
   // Path to the JAR file (update this path as necessary)
-  const JAR_PATH = "firma/firmaXadesBes.jar";
+  const JAR_PATH = path.resolve(__dirname, "firma/firmaXadesBes.jar");
   const JAVA_CMD = "java";
 
   return new Promise((resolve, reject) => {
