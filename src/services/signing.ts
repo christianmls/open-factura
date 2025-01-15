@@ -141,7 +141,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
 
   xml = xml.replace(/\t|\r/g, "");
 
-  const sha1_xml = sha1Base64(xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '<?xml version="1.0" encoding="UTF-8" standalone="no"?>'), "utf8");
+  const sha1_xml = sha1Base64(xml.replace('<?xml version="1.0" encoding="UTF-8"?>', ""), "utf8");
 
   const nameSpaces = 'xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#"';
 
@@ -219,7 +219,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
 
   const sha1KeyInfo = sha1Base64(keyInfo.replace("<ds:KeyInfo", "<ds:KeyInfo " + nameSpaces), "utf8");
 
-  let signedInfo = "\n";
+  let signedInfo = "";
   signedInfo += '<ds:SignedInfo Id="Signature-SignedInfo' + signedInfoNumber + '">';
   signedInfo += '\n<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315">';
   signedInfo += "</ds:CanonicalizationMethod>";
