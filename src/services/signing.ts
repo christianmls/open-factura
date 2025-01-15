@@ -139,7 +139,7 @@ export async function signXml(p12Data: ArrayBuffer, p12Password: string, xmlData
   const exponent = hexToBase64(key.e.data[0].toString(16));
   const modulus = bigIntToBase64(key.n);
 
-  //xml = xml.replace(/\t|\r/g, "");
+  xml = xml.replace(/\t|\r/g, "");
 
   const sha1_xml = sha1Base64(xml.replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8" standalone="no"?>'), "utf8");
 
